@@ -1,4 +1,4 @@
-import 'Model_Interface.dart';
+import '../Interface/Model_Interface.dart';
 
 class Size implements Model {
   int? id;
@@ -18,8 +18,8 @@ class Size implements Model {
 
   @override
   format(List li) {
-    return  li.map((e) => Size(desc: e['size'], id: e['id'])).toList();
+    return li.map((e) => Size(desc: e['size'], id: e['id'])).toList();
   }
 
-  
+
 }

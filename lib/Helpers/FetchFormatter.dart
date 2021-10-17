@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:softflow2/Helpers/getMethodHelperFunction.dart';
 import 'package:softflow2/Helpers/url_model.dart';
-import 'package:softflow2/Models/Model_Interface.dart';
+import 'package:softflow2/Interface/Model_Interface.dart';
 
 Future fetch(Model m) async {
   final UrlGlobal urlObject = new UrlGlobal(
@@ -15,5 +15,6 @@ Future fetch(Model m) async {
     return result;
   } catch (e) {
     print(e.toString());
+    return [];
   }
 }

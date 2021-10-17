@@ -1,4 +1,4 @@
-import 'Model_Interface.dart';
+import '../Interface/Model_Interface.dart';
 
 class Type implements Model {
   int? id;

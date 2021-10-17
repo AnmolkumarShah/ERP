@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/CalenderHelper.dart';
 import 'package:softflow2/Helpers/DropdownHelper.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
+import 'package:softflow2/Helpers/FieldCover.dart';
 import 'package:softflow2/Helpers/Snakebar.dart';
-import 'package:softflow2/Helpers/TextFieldHelper.dart';
 import 'package:softflow2/Models/Rollsize.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
@@ -23,19 +23,21 @@ class _TransactionScreenState extends State<TransactionScreen> {
   List<Rollsize>? rollsize_items;
   List<Shade>? shade_items;
   List<Size>? size_items;
-  List<Trantype>? trantype_items;
   List<Type>? type_items;
+  List<Trantype>? trantype_items;
 
   Rollsize? selected_rollsize;
   Shade? selected_shade;
   Size? selected_size;
-  Trantype? selected_trantype;
   Type? selected_type;
+  Trantype? selected_trantype;
   DateTime? date;
-  String? party;
-  String? rolls;
-  String? mtrs;
-  String? refNum;
+
+  TextEditingController _rolls = TextEditingController(text: "");
+  TextEditingController _mtrs = TextEditingController(text: "");
+
+  TextEditingController _party = TextEditingController(text: "");
+  TextEditingController _refNum = TextEditingController(text: "");
 
   static int count = 0;
 
@@ -43,20 +45,26 @@ class _TransactionScreenState extends State<TransactionScreen> {
     List<Rollsize> rollsizeItems = await fetch(Rollsize());
     List<Shade> shadeItems = await fetch(Shade());
     List<Size> sizeItems = await fetch(Size());
-    List<Trantype> trantypeItems = await fetch(Trantype());
     List<Type> typeItems = await fetch(Type());
+    List<Trantype> trantypeItems = await fetch(Trantype());
+
+    rollsizeItems.insert(0, Rollsize(id: -1, desc: "Default"));
+    shadeItems.insert(0, Shade(id: -1, desc: "Default"));
+    sizeItems.insert(0, Size(id: -1, desc: "Default"));
+    typeItems.insert(0, Type(id: -1, desc: "Default"));
+    trantypeItems.insert(0, Trantype(id: -1, desc: "Default"));
 
     setState(() {
       this.rollsize_items = rollsizeItems;
       this.shade_items = shadeItems;
       this.size_items = sizeItems;
-      this.trantype_items = trantypeItems;
       this.type_items = typeItems;
+      this.trantype_items = trantypeItems;
 
       this.selected_rollsize = rollsizeItems.first;
+      this.selected_trantype = trantypeItems.first;
       this.selected_shade = shadeItems.first;
       this.selected_size = sizeItems.first;
-      this.selected_trantype = trantypeItems.first;
       this.selected_type = typeItems.first;
     });
 
@@ -71,12 +79,33 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
   bool? loading;
 
+  reset() {
+    setState(() {
+      selected_rollsize = rollsize_items![0];
+      selected_shade = shade_items![0];
+      selected_size = size_items![0];
+      selected_trantype = trantype_items![0];
+      selected_type = type_items![0];
+      date = null;
+      _rolls = TextEditingController(text: "");
+      _mtrs = TextEditingController(text: "");
+      _refNum = TextEditingController(text: "");
+      _party = TextEditingController(text: "");
+    });
+  }
+
   bool check() {
     if (date == null) {
       return false;
-    } else if (this.rolls == null) {
+    } else if (this._rolls.value.text == "") {
       return false;
-    } else if (this.mtrs == null) {
+    } else if (this._mtrs.value.text == "") {
+      return false;
+    } else if (selected_rollsize!.id == -1 ||
+        selected_shade!.id == -1 ||
+        selected_size!.id == -1 ||
+        selected_trantype!.id == -1 ||
+        selected_type!.id == -1) {
       return false;
     }
     return true;
@@ -93,10 +122,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
     Transaction tra = Transaction(
       date: this.date,
-      mtrs: this.mtrs,
-      party: this.party,
-      refno: this.refNum,
-      rolls: this.rolls,
+      mtrs: this._mtrs.value.text,
+      party: this._party.value.text,
+      refno: this._refNum.value.text,
+      rolls: this._rolls.value.text,
       rollsize: this.selected_rollsize,
       shade: this.selected_shade,
       size: this.selected_size,
@@ -108,12 +137,19 @@ class _TransactionScreenState extends State<TransactionScreen> {
     print(result);
 
     if (result['message'] == 'success') {
+      reset();
       showSnakeBar(context, "Transaction Saved Successfully");
     }
 
     setState(() {
       loading = false;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    count = 0;
+    super.didChangeDependencies();
   }
 
   @override
@@ -150,26 +186,24 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 },
                 label: "Date",
               ).build(),
-              TextFieldHelper(
-                hint: "Referance Number",
-                type: TextInputType.name,
-                val: refNum,
-                fun: (val) {
-                  setState(() {
-                    this.refNum = val;
-                  });
-                },
-              ).build(),
-              TextFieldHelper(
-                hint: "Party Name",
-                type: TextInputType.name,
-                val: party,
-                fun: (val) {
-                  setState(() {
-                    this.party = val;
-                  });
-                },
-              ).build(),
+              Fieldcover(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Referance Number",
+                    border: InputBorder.none,
+                  ),
+                  controller: _refNum,
+                ),
+              ),
+              Fieldcover(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Party Name",
+                    border: InputBorder.none,
+                  ),
+                  controller: _party,
+                ),
+              ),
               Dropdown(
                 label: "TranType",
                 items: this.trantype_items,
@@ -214,42 +248,52 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 label: "Rollsize",
                 items: this.rollsize_items,
                 fun: (val) {
-                  setState(() {
-                    this.selected_rollsize = val;
-                    this.mtrs = (double.parse(this.rolls!) *
-                            double.parse(this.selected_rollsize!.desc!))
+                  String value;
+                  try {
+                    value = (double.parse(this._rolls.value.text) *
+                            double.parse(val!.desc!))
                         .toString();
+                  } catch (e) {
+                    value = '0';
+                  }
+                  setState(() {
+                    this._mtrs = TextEditingController(text: value);
+                    this.selected_rollsize = val;
                   });
                 },
                 selected: this.selected_rollsize,
               ).build(),
-              TextFieldHelper(
-                w: true,
-                hint: "Rolls",
-                type: TextInputType.number,
-                val: rolls,
-                fun: (val) {
-                  setState(() {
-                    this.rolls = val;
-                    this.mtrs = (double.parse(this.rolls!) *
-                            double.parse(this.selected_rollsize!.desc!))
-                        .toString();
-                  });
-                },
-              ).build(),
-              TextFieldHelper(
-                w: true,
-                hint: "Meters",
-                type: TextInputType.number,
-                val: mtrs,
-                fun: (val) {
-                  setState(() {
-                    this.mtrs = (double.parse(this.rolls!) *
-                            double.parse(this.selected_rollsize!.desc!))
-                        .toString();
-                  });
-                },
-              ).build(),
+              Fieldcover(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Rolls",
+                    border: InputBorder.none,
+                  ),
+                  controller: _rolls,
+                  onChanged: (val) {
+                    String value;
+                    try {
+                      value = (double.parse(this._rolls.value.text) *
+                              double.parse(this.selected_rollsize!.desc!))
+                          .toString();
+                    } catch (e) {
+                      value = '0';
+                    }
+                    setState(() {
+                      this._mtrs = TextEditingController(text: value);
+                    });
+                  },
+                ),
+              ),
+              Fieldcover(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Meters",
+                    border: InputBorder.none,
+                  ),
+                  controller: _mtrs,
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: loading == true

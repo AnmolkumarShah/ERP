@@ -1,4 +1,4 @@
-import 'Model_Interface.dart';
+import '../Interface/Model_Interface.dart';
 
 class Rollsize implements Model {
   int? id;
@@ -21,4 +21,6 @@ class Rollsize implements Model {
         .map((e) => Rollsize(desc: e['rollsize'].toString(), id: e['id']))
         .toList();
   }
+
+
 }

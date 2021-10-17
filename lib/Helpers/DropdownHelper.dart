@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FieldCover.dart';
-import 'package:softflow2/Models/Model_Interface.dart';
+import 'package:softflow2/Interface/Model_Interface.dart';
 
 class Dropdown {
   Model? selected;

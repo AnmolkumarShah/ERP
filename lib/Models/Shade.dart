@@ -1,4 +1,4 @@
-import 'Model_Interface.dart';
+import '../Interface/Model_Interface.dart';
 
 class Shade implements Model {
   int? id;
@@ -19,6 +19,4 @@ class Shade implements Model {
   format(List li) {
     return li.map((e) => Shade(desc: e['shade'], id: e['id'])).toList();
   }
-
-  
 }

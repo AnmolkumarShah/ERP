@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.softflow2">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="softflow2"
+        android:label="Edge Band Inventory"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

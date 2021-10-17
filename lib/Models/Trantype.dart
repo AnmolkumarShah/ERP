@@ -1,4 +1,4 @@
-import 'Model_Interface.dart';
+import '../Interface/Model_Interface.dart';
 
 class Trantype implements Model {
   int? id;
@@ -20,5 +20,5 @@ class Trantype implements Model {
     return li.map((e) => Trantype(desc: e['Trantype'], id: e['id'])).toList();
   }
 
-  
+
 }
