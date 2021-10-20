@@ -19,10 +19,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String? usrname;
   String? pass;
-  bool? loading;
+  bool? loading = false;
   final _formKey = GlobalKey<FormState>();
 
-  login() {
+  login() async {
     setState(() {
       this.loading = true;
     });
@@ -30,15 +30,20 @@ class _LoginScreenState extends State<LoginScreen> {
     User? _user;
     if (this.usrname == "" || this.pass == '') {
       showSnakeBar(context, "Enter All Fields");
+      setState(() {
+        this.loading = false;
+      });
       return;
     }
     if (this.usrname!.toLowerCase() == 'admin') {
       _user = Admin(usrname: this.usrname, pass: this.pass);
-    } else if (this.usrname!.toLowerCase() == 'user') {
+    } else {
       _user = NormalUser(pass: this.pass, usrname: this.usrname);
     }
-    bool? result = _user!.login();
-    Provider.of<MainProvider>(context, listen: false).setUser(_user);
+    bool? result = await _user.login();
+    if (result == true) {
+      Provider.of<MainProvider>(context, listen: false).setUser(_user);
+    }
     setState(() {
       this.loading = false;
     });
@@ -65,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  height: 200,
+                  height: 300,
                   margin: EdgeInsets.all(20),
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -84,6 +89,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Image.asset(
+                          "assets/logo.png",
+                          height: 70,
+                          color: Colors.black,
+                        ),
                         Fieldcover(
                           child: TextFormField(
                             onSaved: (val) {
@@ -120,16 +130,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        TextButton(
-                          onPressed: login,
-                          child: Text(
-                            "GO!",
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        this.loading == true
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : TextButton(
+                                onPressed: login,
+                                child: Text(
+                                  "GO!",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
                   ),

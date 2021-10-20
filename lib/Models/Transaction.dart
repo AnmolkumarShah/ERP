@@ -39,15 +39,15 @@ class Transaction {
       final UrlGlobal urlObject = UrlGlobal(
         p2: """
           insert into transactions(TranRef,TranDate,party,TranType,size,shade,type,rollsize,rolls,mtrs)
-          values('${this.refno}', ${formateDate(this.date!)}, '${this.party}', ${this.trantype!.id}, ${this.size!.id}, ${this.shade!.id},
+          values('${this.refno}', '${formateDate(this.date!)}', '${this.party}', ${this.trantype!.id}, ${this.size!.id}, ${this.shade!.id},
           ${this.type!.id}, ${this.rollsize!.id}, ${this.rolls}, ${this.mtrs})          
         """,
         p1: '1',
-        p: '5',
       );
       final url = urlObject.getUrl();
       final result = await Get.call(url);
       final data = json.decode(result.body);
+
       return {"message": data['status'], 'data': data};
     } catch (e) {
       print(e.toString());

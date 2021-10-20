@@ -1,6 +1,9 @@
 import 'package:softflow2/Interface/User_interface.dart';
 import 'package:softflow2/Screens/AddShade.dart';
-import 'package:softflow2/Screens/StockStatementScreen.dart';
+import 'package:softflow2/Screens/AddUser.dart';
+import 'package:softflow2/Screens/StockINOUT/StockInStockOutScreen.dart';
+import 'package:softflow2/Screens/StockSTATEMENT/StockStatementScreen.dart';
+
 import 'package:softflow2/Screens/TransactionScreen.dart';
 
 class Admin implements User {
@@ -25,14 +28,32 @@ class Admin implements User {
         "value": TransactionScreen(),
       },
       {
-        "name": "Stock Screen",
+        "name": "Stock Statement",
         "value": StockStatement(),
       },
       {
         "name": "Add Shade",
         "value": AddShade(),
+      },
+      {
+        "name": "Stock In Out Report",
+        "value": StockInOutScreen(),
+      },
+      {
+        "name": "Add User",
+        "value": AddUser(),
       }
     ];
     return list;
+  }
+
+  @override
+  addUser() {
+    return;
+  }
+
+  @override
+  getName() {
+    return this.usrname;
   }
 }

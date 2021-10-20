@@ -1,32 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:softflow2/Helpers/DateRangeControl.dart';
 import 'package:softflow2/Helpers/DropdownHelper.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
 import 'package:softflow2/Helpers/Snakebar.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
-import 'package:softflow2/Models/Stock.dart';
+import 'package:softflow2/Models/StockInOut.dart';
 import 'package:softflow2/Models/Trantype.dart';
 import 'package:softflow2/Models/Type.dart';
-import 'package:softflow2/Screens/StockStatementScreen2.dart';
 
-class StockStatement extends StatefulWidget {
-  const StockStatement({Key? key}) : super(key: key);
+import 'StockInStockOutScreen2.dart';
+
+class StockInOutScreen extends StatefulWidget {
+  const StockInOutScreen({Key? key}) : super(key: key);
 
   @override
-  State<StockStatement> createState() => _StockStatementState();
+  State<StockInOutScreen> createState() => _StockInOutScreenState();
 }
 
-class _StockStatementState extends State<StockStatement> {
+class _StockInOutScreenState extends State<StockInOutScreen> {
   static int count = 0;
   List<Shade>? shade_items;
   List<Size>? size_items;
   List<Type>? type_items;
-  List<Trantype>? trantype_items;
+  List<Trantype>? transtype_items;
 
   Shade? selected_shade;
   Size? selected_size;
   Type? selected_type;
   Trantype? selected_trantype;
+  DateTimeRange? rangeDate;
+
+  setDateRange(DateTimeRange? rangeDate) {
+    setState(() {
+      this.rangeDate = rangeDate;
+    });
+  }
 
   Future init() async {
     List<Shade> shadeItems = await fetch(Shade());
@@ -43,7 +52,7 @@ class _StockStatementState extends State<StockStatement> {
       this.shade_items = shadeItems;
       this.size_items = sizeItems;
       this.type_items = typeItems;
-      this.trantype_items = trantypeItems;
+      this.transtype_items = trantypeItems;
 
       this.selected_shade = shadeItems.first;
       this.selected_size = sizeItems.first;
@@ -68,7 +77,7 @@ class _StockStatementState extends State<StockStatement> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Stock Statement"),
+        title: Text("Stock In Out Report"),
       ),
       body: FutureBuilder(
         future: _fetch(),
@@ -83,7 +92,7 @@ class _StockStatementState extends State<StockStatement> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Dropdown(
-                  items: trantype_items,
+                  items: transtype_items,
                   label: "Select Trantype",
                   selected: selected_trantype,
                   fun: (val) {
@@ -118,8 +127,16 @@ class _StockStatementState extends State<StockStatement> {
                       selected_type = val;
                     });
                   }).build(),
+              DateRangeFull(
+                fun: setDateRange,
+                rangeDate: this.rangeDate,
+              ),
               TextButton(
                 onPressed: () {
+                  if (rangeDate == null) {
+                    showSnakeBar(context, "Select Date Range");
+                    return;
+                  }
                   if (selected_shade!.id == -1 &&
                       selected_size!.id == -1 &&
                       selected_trantype!.id == -1 &&
@@ -127,17 +144,18 @@ class _StockStatementState extends State<StockStatement> {
                     showSnakeBar(context, "Select Atleast One");
                     return;
                   }
-                  Stock selectedStock = Stock(
+                  StockInOut? selectedStockInOut = StockInOut(
                     s: selected_size,
                     shade: selected_shade,
                     t: selected_type,
-                    tran: selected_trantype,
+                    trantype: selected_trantype,
+                    r: rangeDate,
                   );
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => StockStatementScreen2(
-                        stock: selectedStock,
+                      builder: (context) => StockInOutScreen2(
+                        stockinout: selectedStockInOut,
                       ),
                     ),
                   );

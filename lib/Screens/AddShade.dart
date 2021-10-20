@@ -38,13 +38,14 @@ class _AddShadeState extends State<AddShade> {
                 )
               : ElevatedButton(
                   onPressed: () async {
-                    setState(() {
-                      loading = true;
-                    });
                     if (_shade!.value.text == '') {
                       showSnakeBar(context, "Enter Shade Value First");
                       return;
                     }
+                    setState(() {
+                      loading = true;
+                    });
+
                     String? query = '''
                 insert into shade(shade)
                 values('${_shade!.value.text}')

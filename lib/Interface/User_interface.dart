@@ -1,5 +1,6 @@
-
 abstract class User {
   bool login();
-  List<Map<String,dynamic>> available_option();
+  addUser();
+  getName();
+  List<Map<String, dynamic>> available_option();
 }

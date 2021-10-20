@@ -1,7 +1,6 @@
 import 'package:softflow2/Interface/Model_Interface.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
-import 'package:softflow2/Models/Trantype.dart';
 import 'package:softflow2/Models/Type.dart';
 
 class Stock implements Model {
@@ -9,33 +8,33 @@ class Stock implements Model {
   Shade? shade;
   Type? type;
   String? query;
-  Trantype? trantype;
 
-  Stock({Size? s, Shade? shade, Type? t, Trantype? tran}) {
+  Stock.t(Size? s, Shade? shade, Type? t){ // constructor only for stockinout
     this.shade = shade;
     this.size = s;
     this.type = t;
-    this.trantype = tran;
+  }
+
+  Stock({Size? s, Shade? shade, Type? t}) {
+    this.shade = shade;
+    this.size = s;
+    this.type = t;
     this.query = this.draftQuery();
   }
 
   String draftQuery() {
     String? decider = '';
 
-    if (this.shade!.id != -1) {
+    if (this.shade!.id != -1 && !decider.contains("a.shade")) {
       decider += " and a.shade = ${this.shade!.id} ";
     }
 
-    if (this.size!.id != -1) {
+    if (this.size!.id != -1 && !decider.contains("a.size")) {
       decider += " and a.size = ${this.size!.id} ";
     }
 
-    if (this.type!.id != -1) {
+    if (this.type!.id != -1 && !decider.contains("a.type")) {
       decider += " and a.type = ${this.type!.id} ";
-    }
-
-    if (this.trantype!.id != -1) {
-      decider += " and a.TranType = ${this.trantype!.id} ";
     }
 
     String? draft_query = '''
@@ -50,6 +49,7 @@ class Stock implements Model {
   size = a.size and shade = a.shade and type = a.type),0) -
   ISNULL((select sum(mtrs) from transactions where trantype = 2 and
   size = a.size and shade = a.shade and type = a.type),0) as mtrs
+  ,a.size,a.shade,a.type
   from
   transactions a
   left join size b on a.size = b.id

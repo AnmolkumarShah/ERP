@@ -31,7 +31,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
   Size? selected_size;
   Type? selected_type;
   Trantype? selected_trantype;
-  DateTime? date;
+  DateTime? date = DateTime.now();
 
   TextEditingController _rolls = TextEditingController(text: "");
   TextEditingController _mtrs = TextEditingController(text: "");
@@ -86,11 +86,11 @@ class _TransactionScreenState extends State<TransactionScreen> {
       selected_size = size_items![0];
       selected_trantype = trantype_items![0];
       selected_type = type_items![0];
-      date = null;
+      // date = null;
       _rolls = TextEditingController(text: "");
       _mtrs = TextEditingController(text: "");
-      _refNum = TextEditingController(text: "");
-      _party = TextEditingController(text: "");
+      // _refNum = TextEditingController(text: "");
+      // _party = TextEditingController(text: "");
     });
   }
 
@@ -134,7 +134,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
     );
 
     final result = await tra.save();
-    print(result);
 
     if (result['message'] == 'success') {
       reset();

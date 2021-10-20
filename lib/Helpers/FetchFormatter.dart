@@ -18,3 +18,24 @@ Future fetch(Model m) async {
     return [];
   }
 }
+
+Future fetchQuery({String? query, String? p1 = '0'}) async {
+  final UrlGlobal urlObject = new UrlGlobal(
+    p2: query!,
+    p1: p1!,
+  );
+  try {
+    final url = urlObject.getUrl();
+    var result = await Get.call(url);
+    var data;
+    try {
+      data = json.decode(result.body) as List<dynamic>;
+    } catch (e) {
+      data = json.decode(result.body);
+    }
+    return data;
+  } catch (e) {
+    print(e.toString());
+    return [];
+  }
+}
