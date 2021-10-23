@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
 import 'package:softflow2/Helpers/dateFormatfromDataBase.dart';
-import 'package:softflow2/Models/Shade.dart';
-import 'package:softflow2/Models/Size.dart';
 import 'package:softflow2/Models/StockInOut.dart';
-import 'package:softflow2/Models/Type.dart';
 
 // ignore: must_be_immutable
 class StockInOutScreen2 extends StatefulWidget {
@@ -18,20 +15,11 @@ class StockInOutScreen2 extends StatefulWidget {
 class _StockInOutScreen2State extends State<StockInOutScreen2> {
   static int count = 0;
   List<dynamic>? list;
-  List<Shade>? shadeItems;
-  List<Size>? sizeItems;
-  List<Type>? typeItems;
 
   Future init() async {
-    List<Shade> shadeItems = await fetch(Shade());
-    List<Size> sizeItems = await fetch(Size());
-    List<Type> typeItems = await fetch(Type());
     final result = await fetch(widget.stockinout!);
     setState(() {
       this.list = result;
-      this.shadeItems = shadeItems;
-      this.sizeItems = sizeItems;
-      this.typeItems = typeItems;
     });
   }
 
@@ -91,101 +79,197 @@ class _StockInOutScreen2State extends State<StockInOutScreen2> {
           }
           return Container(
             margin: EdgeInsets.only(top: 10),
-            child: ListView.builder(
-              itemCount: list!.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(10),
+            child: Column(
+              children: [
+                InfoTop(this.list),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: list!.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: EdgeInsets.all(10),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  " Size : ${list![index]['size']}",
+                                  style: style,
+                                ),
+                                Spacer(),
+                                Text(
+                                  " Rollsize : ${list![index]['rollsize']}",
+                                  style: list![index]['rollsize'] < 0
+                                      ? minusvalue
+                                      : style,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  " Shade : ${list![index]['shade']}",
+                                  style: style,
+                                ),
+                                Spacer(),
+                                Text(
+                                  " Type : ${list![index]['type']}",
+                                  style: style,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  " Tranref : ${list![index]['tranref']}",
+                                  style: style,
+                                ),
+                                Spacer(),
+                                Text(
+                                  " Trantype : ${list![index]['Trantype']}",
+                                  style: style,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  " Rolls : ${list![index]['rolls']}",
+                                  style: (list![index]['Trantype'] as String)
+                                          .toLowerCase()
+                                          .contains('in')
+                                      ? instyle
+                                      : outstyle,
+                                ),
+                                Spacer(),
+                                Text(
+                                  " Meters : ${list![index]['mtrs']}",
+                                  style: (list![index]['Trantype'] as String)
+                                          .toLowerCase()
+                                          .contains('in')
+                                      ? instyle
+                                      : outstyle,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  " Trandate : ${dateFormatFromDataBase(list![index]['trandate'])}",
+                                  style: style,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            " Size : ${list![index]['size']}",
-                            style: style,
-                          ),
-                          Spacer(),
-                          Text(
-                            " Rollsize : ${list![index]['rollsize']}",
-                            style: list![index]['rollsize'] < 0
-                                ? minusvalue
-                                : style,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            " Shade : ${list![index]['shade']}",
-                            style: style,
-                          ),
-                          Spacer(),
-                          Text(
-                            " Type : ${list![index]['type']}",
-                            style: style,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            " Tranref : ${list![index]['tranref']}",
-                            style: style,
-                          ),
-                          Spacer(),
-                          Text(
-                            " Trantype : ${list![index]['Trantype']}",
-                            style: style,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            " Rolls : ${list![index]['rolls']}",
-                            style: (list![index]['Trantype'] as String)
-                                    .toLowerCase()
-                                    .contains('in')
-                                ? instyle
-                                : outstyle,
-                          ),
-                          Spacer(),
-                          Text(
-                            " Meters : ${list![index]['mtrs']}",
-                            style: (list![index]['Trantype'] as String)
-                                    .toLowerCase()
-                                    .contains('in')
-                                ? instyle
-                                : outstyle,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            " Trandate : ${dateFormatFromDataBase(list![index]['trandate'])}",
-                            style: style,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
+                ),
+              ],
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class InfoTop extends StatelessWidget {
+  List<dynamic>? list;
+  double inRoll = 0, outRoll = 0, inMet = 0, outMet = 0;
+  double inTo = 0, outTo = 0;
+  InfoTop(this.list) {
+    this.list = list;
+    this.calculate();
+  }
+
+  calculate() {
+    this.list!.forEach((element) {
+      if (element['Trantype'] == "Stock IN") {
+        this.inTo += 1;
+        this.inMet += element['mtrs'];
+        this.inRoll += element['rolls'];
+      } else {
+        this.outTo += 1;
+        this.outMet += (element['mtrs']);
+        this.outRoll += element['rolls'];
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle? style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    );
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "Total Stock In  :  ${this.inTo}",
+            style: style,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Rolls : ${this.inRoll}",
+                style: style,
+              ),
+              Text(
+                "Meters : ${this.inMet}",
+                style: style,
+              ),
+            ],
+          ),
+          Divider(
+            color: Colors.black,
+          ),
+          Text(
+            "Total Stock Out  :  ${this.outTo}",
+            style: style,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Rolls : ${this.outRoll}",
+                style: style,
+              ),
+              Text(
+                "Meters : ${this.outMet}",
+                style: style,
+              ),
+            ],
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(10),
       ),
     );
   }

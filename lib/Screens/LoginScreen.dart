@@ -122,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                             keyboardType: TextInputType.visiblePassword,
+                            obscureText: true,
                             validator: RequiredValidator(
                                 errorText: "This is required field!"),
                             decoration: InputDecoration(

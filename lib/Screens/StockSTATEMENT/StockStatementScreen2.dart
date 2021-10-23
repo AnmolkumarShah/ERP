@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
+import 'package:softflow2/Models/Rollsize.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
 import 'package:softflow2/Models/Type.dart';
@@ -22,17 +23,21 @@ class _StockStatementScreen2State extends State<StockStatementScreen2> {
   List<Shade>? shadeItems;
   List<Size>? sizeItems;
   List<Type>? typeItems;
+  List<Rollsize>? rollItems;
 
   Future init() async {
     List<Shade> shadeItems = await fetch(Shade());
     List<Size> sizeItems = await fetch(Size());
     List<Type> typeItems = await fetch(Type());
+    List<Rollsize> rollItems = await fetch(Rollsize());
+
     final result = await fetch(widget.stock!);
     setState(() {
       this.list = result;
       this.shadeItems = shadeItems;
       this.sizeItems = sizeItems;
       this.typeItems = typeItems;
+      this.rollItems = rollItems;
     });
   }
 
@@ -95,6 +100,8 @@ class _StockStatementScreen2State extends State<StockStatementScreen2> {
                               (e) => e.desc == list![index]['size']),
                           type: typeItems!.firstWhere(
                               (e) => e.desc == list![index]['type']),
+                          rollsize: rollItems!.firstWhere((e) =>
+                              e.desc == list![index]['roll_size'].toString()),
                         ),
                       ),
                     );
@@ -109,9 +116,18 @@ class _StockStatementScreen2State extends State<StockStatementScreen2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          " Size : ${list![index]['size']}",
-                          style: style,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              " Size : ${list![index]['size']}",
+                              style: style,
+                            ),
+                            Text(
+                              " Rollsize : ${list![index]['roll_size']}",
+                              style: style,
+                            ),
+                          ],
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,

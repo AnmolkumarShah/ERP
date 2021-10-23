@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:softflow2/Helpers/Snakebar.dart';
 import 'package:softflow2/Provider/MainProvider.dart';
 import 'package:softflow2/Screens/Dashboard.dart';
 import 'package:softflow2/Screens/LoginScreen.dart';
@@ -15,23 +16,30 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => MainProvider(),
-        )
-      ],
-      child: MaterialApp(
-        title: 'Edge Band Inventory',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.grey,
+    try {
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => MainProvider(),
+          )
+        ],
+        child: MaterialApp(
+          title: 'Edge Band Inventory',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.grey,
+          ),
+          home: LoginScreen(),
+          routes: {
+            "/dashboard": (context) => Dashboard(),
+          },
         ),
-        home: LoginScreen(),
-        routes: {
-          "/dashboard": (context) => Dashboard(),
-        },
-      ),
+      );
+    } catch (e) {
+      showSnakeBar(context, e.toString());
+    }
+    return Center(
+      child: Chip(label: Text("Error Occured")),
     );
   }
 }

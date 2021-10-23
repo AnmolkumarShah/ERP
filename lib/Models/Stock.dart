@@ -9,7 +9,8 @@ class Stock implements Model {
   Type? type;
   String? query;
 
-  Stock.t(Size? s, Shade? shade, Type? t){ // constructor only for stockinout
+  Stock.t(Size? s, Shade? shade, Type? t) {
+    // constructor only for stockinout
     this.shade = shade;
     this.size = s;
     this.type = t;
@@ -40,23 +41,24 @@ class Stock implements Model {
     String? draft_query = '''
 
   select
-  b.size,c.shade,d.type, 
+  b.size,c.shade,d.type, e.rollsize as roll_size,
   ISNULL((select sum(rolls) from transactions where trantype = 1 and
-  size = a.size and shade = a.shade and type = a.type),0) -
+  size = a.size and shade = a.shade and type = a.type and rollsize = a.rollsize),0) -
   ISNULL((select sum(rolls) from transactions where trantype = 2 and
-  size = a.size and shade = a.shade and type = a.type),0) as rolls,
+  size = a.size and shade = a.shade and type = a.type  and rollsize = a.rollsize),0) as rolls,
   ISNULL((select sum(mtrs) from transactions where trantype = 1 and
-  size = a.size and shade = a.shade and type = a.type),0) -
+  size = a.size and shade = a.shade and type = a.type  and rollsize = a.rollsize),0) -
   ISNULL((select sum(mtrs) from transactions where trantype = 2 and
-  size = a.size and shade = a.shade and type = a.type),0) as mtrs
-  ,a.size,a.shade,a.type
+  size = a.size and shade = a.shade and type = a.type  and rollsize = a.rollsize),0) as mtrs
+  ,a.size,a.shade,a.type,a.rollsize
   from
   transactions a
   left join size b on a.size = b.id
   left join shade c on a.shade = c.id
   left join type d on a.type = d.id
+  left join rollsize e on a.rollsize = e.id
   where 0 = 0 $decider
-  group by b.size,c.shade,d.type,a.size,a.shade,a.type
+  group by b.size,c.shade,d.type,a.rollsize,a.size,a.shade,a.type,e.rollsize
   order by c.shade, b.size,d.type
   
   ''';

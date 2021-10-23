@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
 import 'package:softflow2/Helpers/dateFormatfromDataBase.dart';
+import 'package:softflow2/Models/Rollsize.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
 import 'package:softflow2/Models/Type.dart';
@@ -10,11 +11,13 @@ class StockStatementScreen3 extends StatefulWidget {
   Size? size;
   Shade? shade;
   Type? type;
+  Rollsize? rollsize;
   StockStatementScreen3({
     Key? key,
     this.shade,
     this.size,
     this.type,
+    this.rollsize,
   }) : super(key: key);
 
   @override
@@ -31,7 +34,7 @@ class _StockStatementScreen3State extends State<StockStatementScreen3> {
     left join
     trantype b on a.trantype = b.id
     left join  rollsize c on a.rollsize = c.id
-    where a.size = ${widget.size!.id}  and a.shade = ${widget.shade!.id} and a.type = ${widget.type!.id}
+    where a.size = ${widget.size!.id}  and a.shade = ${widget.shade!.id} and a.type = ${widget.type!.id} and a.rollsize = ${widget.rollsize!.id}
     ''');
     setState(() {
       this.list = result;
