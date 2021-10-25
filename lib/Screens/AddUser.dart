@@ -31,8 +31,8 @@ class _AddUserState extends State<AddUser> {
       pass: _pwd!.value.text.trim(),
     );
 
-    bool? check = await nu.login();
-    if (check == true) {
+    var res = await nu.login();
+    if (res['msg'] == true) {
       showSnakeBar(context, "Already A User With This UserName & Password");
     } else {
       var result = await nu.addUser();
