@@ -44,20 +44,28 @@ class _LoginScreenState extends State<LoginScreen> {
           result['data']['isadmin'] == null ? false : result['data']['isadmin'];
       _user.isblock =
           result['data']['isblock'] == null ? false : result['data']['isblock'];
+      _user.id = result['data']['id'];
       if (_user.isadmin == true) {
         _user = Admin.castAdmin(_user);
       } else {
         _user = NormalUser.castNormal(_user);
       }
       Provider.of<MainProvider>(context, listen: false).setUser(_user);
-    } else {
+      if (_user!.isblock == false) {
+        Navigator.popAndPushNamed(context, Dashboard.routeName);
+      } else if (_user.isblock == true) {
+        showSnakeBar(context, "YOU ARE BLOCKED FROM USING APPLICATION");
+        setState(() {
+          this.loading = false;
+        });
+      } else {
+        showSnakeBar(context, "Error Occured");
+        setState(() {
+          this.loading = false;
+        });
+      }
+    } else if (result['msg'] == false) {
       showSnakeBar(context, "NO USER FOUND");
-    }
-
-    if (_user!.isblock == false) {
-      Navigator.popAndPushNamed(context, Dashboard.routeName);
-    } else {
-      showSnakeBar(context, "YOU ARE BLOCKED FROM USING APPLICATION");
       setState(() {
         this.loading = false;
       });

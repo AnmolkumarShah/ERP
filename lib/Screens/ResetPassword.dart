@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:softflow2/Helpers/FieldCover.dart';
 import 'package:softflow2/Helpers/Snakebar.dart';
 import 'package:softflow2/Interface/User_interface.dart';
-import 'package:softflow2/Models/NormalUser.dart';
 import 'package:softflow2/Provider/MainProvider.dart';
 
+// ignore: must_be_immutable
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({Key? key}) : super(key: key);
+  User? forUser;
+  ResetPasswordScreen({Key? key, this.forUser}) : super(key: key);
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -19,7 +20,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   TextEditingController? _oldpass = TextEditingController(text: "");
   TextEditingController? _newpass = TextEditingController(text: "");
 
-  resetPass() async {
+  resetPass(User? u) async {
     if (_usrname!.value.text == '' ||
         _oldpass!.value.text == '' ||
         _newpass!.value.text == '') {
@@ -30,16 +31,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       loading = true;
     });
 
-    NormalUser? nu = NormalUser(
-      usrname: _usrname!.value.text.trim(),
-      newP: _newpass!.value.text.trim(),
-      pass: _oldpass!.value.text.trim(),
-    );
-
-    var result = await nu.resetPassword();
+    var result = await u!.resetPassword(_newpass!.value.text);
 
     if (result == true) {
       showSnakeBar(context, "Password Changed Successfully");
+      User? inDevice =
+          Provider.of<MainProvider>(context, listen: false).getUser();
+      if (u.id == inDevice!.getId()) {
+        u.pass = _newpass!.value.text;
+        Provider.of<MainProvider>(context, listen: false).setUser(u);
+      }
     } else {
       showSnakeBar(context, "Error In Password Changing");
     }
@@ -54,10 +55,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    User? currentUser =
-        Provider.of<MainProvider>(context, listen: false).getUser();
+    User? currentUser;
+    if (widget.forUser == null) {
+      currentUser = Provider.of<MainProvider>(context, listen: false).getUser();
+    } else {
+      currentUser = widget.forUser;
+    }
     if (currentUser != null) {
       _usrname = TextEditingController(text: currentUser.getName());
+      _oldpass = TextEditingController(text: currentUser.getPass());
     }
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   child: CircularProgressIndicator(),
                 )
               : ElevatedButton(
-                  onPressed: resetPass,
+                  onPressed: () => resetPass(currentUser),
                   child: Text("Reset Password"),
                 )
         ],

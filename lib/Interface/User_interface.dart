@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
 
 class User {
@@ -58,6 +59,14 @@ class User {
     return this.usrname;
   }
 
+  getPass() {
+    return this.pass;
+  }
+
+  getId() {
+    return this.id;
+  }
+
   login() async {
     var result = await fetchQuery(
         query:
@@ -68,6 +77,43 @@ class User {
     return {'msg': false, 'data': null};
   }
 
+  addUser() async {
+    var result = await fetchQuery(
+      p1: '1',
+      query: '''
+
+        insert into usr_mast(usr_nm,pwd,isadmin,isblock)
+        values('${this.usrname}', '${this.pass}',0,0)
+
+      ''',
+    );
+    return result;
+  }
+
+  resetPassword(String? newP) async {
+    var check = await this.login();
+    print("------------");
+    print(check);
+    print("------------");
+    if (check['msg'] == true) {
+      var result = await fetchQuery(
+        p1: '1',
+        query: '''
+          update usr_mast
+          set pwd = '${newP}'
+          where usr_nm = '${this.usrname}' and pwd = '${this.pass}'
+        ''',
+      );
+
+      if (result['status'] == 'success') {
+        this.pass = newP;
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
   available_option() {}
-  display() {}
+  display(BuildContext context) {}
 }

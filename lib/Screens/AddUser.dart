@@ -26,16 +26,16 @@ class _AddUserState extends State<AddUser> {
       this.loading = true;
     });
 
-    NormalUser? nu = NormalUser(
+    User? user = User(
       usrname: _usrname!.value.text.trim(),
       pass: _pwd!.value.text.trim(),
     );
 
-    var res = await nu.login();
+    var res = await user.login();
     if (res['msg'] == true) {
       showSnakeBar(context, "Already A User With This UserName & Password");
     } else {
-      var result = await nu.addUser();
+      var result = await user.addUser();
       if (result['status'] == 'success') {
         showSnakeBar(context, "New User Addeed Successfully");
       }
@@ -54,49 +54,22 @@ class _AddUserState extends State<AddUser> {
       appBar: AppBar(
         title: Text("Add User"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Center(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Fieldcover(
-                        child: TextFormField(
-                          controller: _usrname,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "User Name",
-                          ),
-                        ),
-                      ),
-                      Fieldcover(
-                        child: TextFormField(
-                          controller: _pwd,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Password",
-                          ),
-                        ),
-                      ),
-                      this.loading == false
-                          ? TextButton(
-                              onPressed: this.save,
-                              child: Text("Add User"),
-                            )
-                          : Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                    ],
-                  ),
-                ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Chip(
+            label: Text(
+              "Swipe Down To Refresh",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Expanded(
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: FutureBuilder(
                 future: fetchUser(),
                 builder: (context, snapshot) {
@@ -117,7 +90,7 @@ class _AddUserState extends State<AddUser> {
                           child: ListView.builder(
                             itemCount: data.length,
                             itemBuilder: (context, index) {
-                              return (data[index] as User).display();
+                              return (data[index] as User).display(context);
                             },
                           ),
                         ),
@@ -127,8 +100,46 @@ class _AddUserState extends State<AddUser> {
                 },
               ),
             ),
-          ],
-        ),
+          ),
+          Center(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Fieldcover(
+                      child: TextFormField(
+                        controller: _usrname,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "User Name",
+                        ),
+                      ),
+                    ),
+                    Fieldcover(
+                      child: TextFormField(
+                        controller: _pwd,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Password",
+                        ),
+                      ),
+                    ),
+                    this.loading == false
+                        ? TextButton(
+                            onPressed: this.save,
+                            child: Text("Add User"),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
