@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:softflow2/Helpers/getMethodHelperFunction.dart';
 import 'package:softflow2/Helpers/url_model.dart';
 import 'package:softflow2/Interface/Model_Interface.dart';
+import 'package:softflow2/Interface/User_interface.dart';
+import 'package:softflow2/Models/Admin.dart';
+import 'package:softflow2/Models/NormalUser.dart';
 
 Future fetch(Model m) async {
   final UrlGlobal urlObject = new UrlGlobal(
@@ -13,6 +16,29 @@ Future fetch(Model m) async {
     final data = json.decode(result.body) as List<dynamic>;
     result = m.format(data);
     return result;
+  } catch (e) {
+    print(e.toString());
+    return [];
+  }
+}
+
+Future fetchUser() async {
+  final UrlGlobal urlObject = new UrlGlobal(
+    p2: User.query!,
+  );
+  try {
+    final url = urlObject.getUrl();
+    var result = await Get.call(url);
+    final data = json.decode(result.body) as List<dynamic>;
+    List<User> user_list = User.format(data);
+    List<dynamic> final_list = user_list.map((element) {
+      if (element.isadmin == true) {
+        return Admin.castAdmin(element);
+      } else {
+        return NormalUser.castNormal(element);
+      }
+    }).toList();
+    return final_list;
   } catch (e) {
     print(e.toString());
     return [];
@@ -33,6 +59,7 @@ Future fetchQuery({String? query, String? p1 = '0'}) async {
     } catch (e) {
       data = json.decode(result.body);
     }
+    print(data);
     return data;
   } catch (e) {
     print(e.toString());

@@ -187,6 +187,7 @@ class _StockInOutScreen2State extends State<StockInOutScreen2> {
   }
 }
 
+// ignore: must_be_immutable
 class InfoTop extends StatelessWidget {
   List<dynamic>? list;
   double inRoll = 0, outRoll = 0, inMet = 0, outMet = 0;

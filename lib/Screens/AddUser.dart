@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:softflow2/Helpers/FetchFormatter.dart';
 import 'package:softflow2/Helpers/FieldCover.dart';
 import 'package:softflow2/Helpers/Snakebar.dart';
+import 'package:softflow2/Interface/User_interface.dart';
 import 'package:softflow2/Models/NormalUser.dart';
 
 class AddUser extends StatefulWidget {
@@ -14,6 +16,7 @@ class _AddUserState extends State<AddUser> {
   TextEditingController? _usrname = TextEditingController(text: "");
   TextEditingController? _pwd = TextEditingController(text: "");
   bool loading = false;
+
   Future save() async {
     if (_usrname!.value.text == '' || _pwd!.value.text == "") {
       showSnakeBar(context, "Enter Name And Password");
@@ -53,45 +56,93 @@ class _AddUserState extends State<AddUser> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Fieldcover(
-                    child: TextFormField(
-                      controller: _usrname,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "User Name",
-                      ),
-                    ),
-                  ),
-                  Fieldcover(
-                    child: TextFormField(
-                      controller: _pwd,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Password",
-                      ),
-                    ),
-                  ),
-                  this.loading == false
-                      ? TextButton(
-                          onPressed: this.save,
-                          child: Text("Add User"),
-                        )
-                      : Center(
-                          child: CircularProgressIndicator(),
+        child: Column(
+          children: [
+            Center(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Fieldcover(
+                        child: TextFormField(
+                          controller: _usrname,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "User Name",
+                          ),
                         ),
-                ],
+                      ),
+                      Fieldcover(
+                        child: TextFormField(
+                          controller: _pwd,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Password",
+                          ),
+                        ),
+                      ),
+                      this.loading == false
+                          ? TextButton(
+                              onPressed: this.save,
+                              child: Text("Add User"),
+                            )
+                          : Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            Expanded(
+              child: FutureBuilder(
+                future: fetchUser(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  var data = snapshot.data as List<dynamic>;
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      setState(() {});
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return (data[index] as User).display();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class NormalUserTile extends StatelessWidget {
+  NormalUser? user;
+  NormalUserTile({Key? key, this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(this.user!.usrname!),
     );
   }
 }
