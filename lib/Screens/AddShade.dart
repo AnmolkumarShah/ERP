@@ -26,7 +26,7 @@ class _AddShadeState extends State<AddShade> {
           Fieldcover(
             child: TextFormField(
               controller: _shade,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 border: InputBorder.none,
               ),
