@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
+import 'package:softflow2/Helpers/create_excel.dart';
 import 'package:softflow2/Helpers/dateFormatfromDataBase.dart';
 import 'package:softflow2/Models/StockInOut.dart';
 
@@ -61,6 +62,11 @@ class _StockInOutScreen2State extends State<StockInOutScreen2> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Stock InOut Statements"),
+        actions: [
+          CreateExcelFile(
+            data: list == null ? [] : list!,
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: _fetch(),
