@@ -41,5 +41,6 @@ saveFile(File? xFile, BuildContext context, String name) async {
     showSnakeBar(context, "File Saved Successfully");
   } catch (e) {
     print(e);
+    showSnakeBar(context, "Permission Not Allowed, File Not Saved");
   }
 }

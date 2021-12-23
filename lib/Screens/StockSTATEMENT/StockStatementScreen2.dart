@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:softflow2/Helpers/FetchFormatter.dart';
+import 'package:softflow2/Helpers/create_excel.dart';
 import 'package:softflow2/Models/Rollsize.dart';
 import 'package:softflow2/Models/Shade.dart';
 import 'package:softflow2/Models/Size.dart';
@@ -67,6 +68,12 @@ class _StockStatementScreen2State extends State<StockStatementScreen2> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Stock Statements"),
+        actions: [
+          CreateExcelFile(
+            data: list == null ? [] : list!,
+            isStockInOut: false,
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: _fetch(),

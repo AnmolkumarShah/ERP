@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:softflow2/Helpers/Snakebar.dart';
 import 'package:softflow2/Helpers/dateFormatfromDataBase.dart';
 import 'package:softflow2/Helpers/save_image_to_directory.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
@@ -56,17 +57,30 @@ class _CreateExcelFileState extends State<CreateExcelFile> {
     String lastName =
         widget.isStockInOut == true ? "In Out Statement" : "Stock Statement";
     String nameOfFile = "${dateFormat(DateTime.now())} ${lastName}";
-    await saveFile(file, context, nameOfFile);
-    OpenFile.open(fileName);
+    try {
+      await saveFile(file, context, nameOfFile);
+      showSnakeBar(context, "File Saved Successfully");
+    } catch (e) {
+      showSnakeBar(context, "Error in Saving File");
+    }
+    try {
+      OpenFile.open(fileName);
+    } catch (e) {
+      showSnakeBar(context, "No App Found To Open File");
+    }
   }
 
   insertRowData(List<dynamic> data, int firstIndex) {
     List<List<dynamic>> dataRows = [];
-    data.forEach((e) {
-      (e as Map<String, dynamic>)['trandate'] =
-          dateFormatFromDataBase((e)['trandate']);
-      dataRows.add((e).values.toList());
-    });
+    if ((data[0] as Map<String, dynamic>)
+        .keys
+        .contains((el) => el == 'trandate')) {
+      data.forEach((e) {
+        (e as Map<String, dynamic>)['trandate'] =
+            dateFormatFromDataBase((e)['trandate']);
+        dataRows.add((e).values.toList());
+      });
+    }
 
     dataRows.forEach((e) {
       sheet!.importList(e, firstIndex + 1 + dataRows.indexOf(e), 1, false);
@@ -104,7 +118,7 @@ class _CreateExcelFileState extends State<CreateExcelFile> {
     if (widget.isStockInOut == true) calculate();
     return IconButton(
       onPressed: () async {
-        Navigator.pop(context);
+        // Navigator.pop(context);
         dynamic data = widget.data;
         List<String> heading =
             ((data[0] as Map<String, dynamic>).keys).toList();
