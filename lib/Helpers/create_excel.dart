@@ -13,9 +13,11 @@ class CreateExcelFile extends StatefulWidget {
     Key? key,
     required this.data,
     this.isStockInOut = true,
+    this.isDate = true,
   }) : super(key: key);
   List<dynamic> data;
   bool isStockInOut;
+  bool isDate; // weather it will have date or not
   @override
   State<CreateExcelFile> createState() => _CreateExcelFileState();
 }
@@ -60,11 +62,12 @@ class _CreateExcelFileState extends State<CreateExcelFile> {
     try {
       await saveFile(file, context, nameOfFile);
       showSnakeBar(context, "File Saved Successfully");
+      Navigator.pop(context);
     } catch (e) {
       showSnakeBar(context, "Error in Saving File");
     }
     try {
-      OpenFile.open(fileName);
+      await OpenFile.open(fileName);
     } catch (e) {
       showSnakeBar(context, "No App Found To Open File");
     }
@@ -72,12 +75,14 @@ class _CreateExcelFileState extends State<CreateExcelFile> {
 
   insertRowData(List<dynamic> data, int firstIndex) {
     List<List<dynamic>> dataRows = [];
-    if ((data[0] as Map<String, dynamic>)
-        .keys
-        .contains((el) => el == 'trandate')) {
+    if (widget.isDate == true) {
       data.forEach((e) {
         (e as Map<String, dynamic>)['trandate'] =
             dateFormatFromDataBase((e)['trandate']);
+        dataRows.add((e).values.toList());
+      });
+    } else {
+      data.forEach((e) {
         dataRows.add((e).values.toList());
       });
     }

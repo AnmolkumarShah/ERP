@@ -72,6 +72,7 @@ class _StockStatementScreen2State extends State<StockStatementScreen2> {
           CreateExcelFile(
             data: list == null ? [] : list!,
             isStockInOut: false,
+            isDate: false,
           ),
         ],
       ),
