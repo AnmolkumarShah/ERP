@@ -51,8 +51,8 @@ class _DateRangeFullState extends State<DateRangeFull> {
             onPressed: () async {
               DateTimeRange? rangeDate = await showDateRangePicker(
                 context: context,
-                firstDate: DateTime(DateTime.now().year),
-                lastDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime.now().add(Duration(days: 1)),
               );
               widget.fun!(rangeDate);
               widget.rangeDate = rangeDate;
