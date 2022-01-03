@@ -42,6 +42,8 @@ dependencies:
   path_provider: ^2.0.1
   open_file: ^3.2.1
   permission_handler: ^8.2.6
+  universal_html:
+  
 
 dev_dependencies:
   flutter_test:

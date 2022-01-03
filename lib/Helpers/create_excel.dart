@@ -8,6 +8,10 @@ import 'package:softflow2/Helpers/dateFormatfromDataBase.dart';
 import 'package:softflow2/Helpers/save_image_to_directory.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
+import 'package:universal_html/html.dart' show AnchorElement;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
+
 class CreateExcelFile extends StatefulWidget {
   CreateExcelFile({
     Key? key,
@@ -51,25 +55,33 @@ class _CreateExcelFileState extends State<CreateExcelFile> {
   writeDate() async {
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
-    final String path = (await getApplicationSupportDirectory()).path;
-    final String fileName =
-        Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
-    final File file = File(fileName);
-    await file.writeAsBytes(bytes, flush: true);
-    String lastName =
-        widget.isStockInOut == true ? "In Out Statement" : "Stock Statement";
-    String nameOfFile = "${dateFormat(DateTime.now())} ${lastName}";
-    try {
-      await saveFile(file, context, nameOfFile);
-      showSnakeBar(context, "File Saved Successfully");
-      Navigator.pop(context);
-    } catch (e) {
-      showSnakeBar(context, "Error in Saving File");
-    }
-    try {
-      await OpenFile.open(fileName);
-    } catch (e) {
-      showSnakeBar(context, "No App Found To Open File");
+    if (kIsWeb) {
+      AnchorElement(
+          href:
+              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
+        ..setAttribute('download', 'Output.xlsx')
+        ..click();
+    } else {
+      final String path = (await getApplicationSupportDirectory()).path;
+      final String fileName =
+          Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
+      final File file = File(fileName);
+      await file.writeAsBytes(bytes, flush: true);
+      String lastName =
+          widget.isStockInOut == true ? "In Out Statement" : "Stock Statement";
+      String nameOfFile = "${dateFormat(DateTime.now())} ${lastName}";
+      try {
+        await saveFile(file, context, nameOfFile);
+        showSnakeBar(context, "File Saved Successfully");
+        Navigator.pop(context);
+      } catch (e) {
+        showSnakeBar(context, "Error in Saving File");
+      }
+      try {
+        await OpenFile.open(fileName);
+      } catch (e) {
+        showSnakeBar(context, "No App Found To Open File");
+      }
     }
   }
 
